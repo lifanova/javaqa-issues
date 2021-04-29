@@ -9,6 +9,7 @@ import ru.netology.repository.IssueRepository;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class IssueManager {
     private IssueRepository repository;
@@ -19,40 +20,40 @@ public class IssueManager {
 
     /**
      * Сохранить issue
-     * */
-    public void saveIssue(Issue issue){
+     */
+    public void saveIssue(Issue issue) {
         repository.save(issue);
     }
 
     /**
      * Получить issue по id
-     * */
-    public Issue getIssueById(int id){
-       return repository.findById(id);
+     */
+    public Issue getIssueById(int id) {
+        return repository.findById(id);
     }
 
     /**
      * Удалить issue по id
-     * */
-    public void removeIssue(int id){
+     */
+    public void removeIssue(int id) {
         repository.removeById(id);
     }
 
     /**
      * Открыть issue по id
-     * */
-    public void openIssueById(int id){
+     */
+    public void openIssueById(int id) {
         setOpenedStatus(id, true);
     }
 
     /**
      * Закрыть issue по id
-     * */
-    public void closeIssueById(int id){
+     */
+    public void closeIssueById(int id) {
         setOpenedStatus(id, false);
     }
 
-    private void setOpenedStatus(int id, boolean opened){
+    private void setOpenedStatus(int id, boolean opened) {
         Issue issue = repository.findById(id);
 
         if (issue == null) {
@@ -66,46 +67,63 @@ public class IssueManager {
 
     /**
      * Получить все открытые issues
-     * */
-    public List<Issue> getOpenedIssues(){
-        return repository.findAll();
+     */
+    public List<Issue> getOpenedIssues() {
+        Predicate<Issue> predicate = (issue) -> issue.isOpened();
+
+        return repository.filterByPredicate(predicate);
     }
 
     /**
      * Получить все закрытые issues
+     */
+    public List<Issue> getClosedIssues() {
+        Predicate<Issue> predicate = (issue) -> !issue.isOpened();
+
+        return repository.filterByPredicate(predicate);
+    }
+
+    /**
+     * Получить issues, отфильтрованные по автору
      * */
-    public List<Issue> getClosedIssues(){
-        return repository.findAll();
+    public List<Issue> getIssuesByAuthor(String author){
+        if(author == null || author.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Predicate<Issue> predicate = (issue) -> author.equalsIgnoreCase(issue.getAuthor());
+
+        return repository.filterByPredicate(predicate);
     }
 
     /* Сортировка */
-    public List<Issue> getAllByNewest(){
+    public List<Issue> getAllByNewest() {
         return getAllByComparator(new IssueComparatorByNewest());
     }
 
-    public List<Issue> getAllByOldest(){
+    public List<Issue> getAllByOldest() {
         List<Issue> result = getAllByComparator(new IssueComparatorByNewest());
         Collections.reverse(result);
 
         return result;
     }
 
-    public List<Issue> getAllByMostCommented(){
+    public List<Issue> getAllByMostCommented() {
         return getAllByComparator(new IssueComparatorByMostCommented());
     }
 
-    public List<Issue> getAllByLeastCommented(){
+    public List<Issue> getAllByLeastCommented() {
         List<Issue> result = getAllByComparator(new IssueComparatorByMostCommented());
         Collections.reverse(result);
 
         return result;
     }
 
-    public List<Issue> getAllByRecentlyUpdated(){
+    public List<Issue> getAllByRecentlyUpdated() {
         return getAllByComparator(new IssueComparatorByRecentlyUpdated());
     }
 
-    public List<Issue> getAllByLastRecentlyUpdated(){
+    public List<Issue> getAllByLastRecentlyUpdated() {
         List<Issue> result = getAllByComparator(new IssueComparatorByRecentlyUpdated());
         Collections.reverse(result);
 
@@ -114,8 +132,8 @@ public class IssueManager {
 
     /**
      * Получить список issues и отсортировать его по нужному компаратору
-     * */
-    private List<Issue> getAllByComparator(Comparator<Issue> comparator){
+     */
+    private List<Issue> getAllByComparator(Comparator<Issue> comparator) {
         List<Issue> result = repository.findAll();
         result.sort(comparator);
 
