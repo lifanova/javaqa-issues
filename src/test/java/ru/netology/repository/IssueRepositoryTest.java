@@ -66,7 +66,7 @@ public class IssueRepositoryTest {
         pullRequests.add("Provide a way to run tests");
         issue.setPullRequests(pullRequests);
 
-        System.out.println("[shouldSaveComplexItem]" + issue.toString());
+        //System.out.println("[shouldSaveComplexItem]" + issue.toString());
         repository.save(issue);
 
         Issue actual = repository.findById(issue.getId());

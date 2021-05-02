@@ -1,6 +1,7 @@
 package ru.netology.domain;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -38,6 +39,11 @@ public class Issue {
     private Date updatedDate;
 
     public Issue() {
+        labels = new HashSet<>();
+        projects = new HashSet<>();
+        assignee = new HashSet<>();
+        comments = new HashSet<>();
+        pullRequests = new HashSet<>();
     }
 
     public int getId() {

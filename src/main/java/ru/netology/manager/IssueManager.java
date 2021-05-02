@@ -1,14 +1,12 @@
 package ru.netology.manager;
 
 import ru.netology.domain.Issue;
-import ru.netology.domain.IssueComparatorByMostCommented;
-import ru.netology.domain.IssueComparatorByNewest;
-import ru.netology.domain.IssueComparatorByRecentlyUpdated;
+import ru.netology.domain.IssueComparatorByLeastCommented;
+import ru.netology.domain.IssueComparatorByOldest;
+import ru.netology.domain.IssueComparatorByLastRecentlyUpdated;
 import ru.netology.repository.IssueRepository;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class IssueManager {
@@ -85,9 +83,9 @@ public class IssueManager {
 
     /**
      * Получить issues, отфильтрованные по автору
-     * */
-    public List<Issue> getIssuesByAuthor(String author){
-        if(author == null || author.isEmpty()) {
+     */
+    public List<Issue> getIssuesByAuthor(String author) {
+        if (author == null || author.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -96,38 +94,92 @@ public class IssueManager {
         return repository.filterByPredicate(predicate);
     }
 
+    /**
+     * Получить issues, отфильтрованные по milestone
+     */
+    public List<Issue> getIssuesByMilestone(String milestone) {
+        if (milestone == null || milestone.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Predicate<Issue> predicate = (issue) -> milestone.equalsIgnoreCase(issue.getMilestone());
+
+        return repository.filterByPredicate(predicate);
+    }
+
+    public List<Issue> getIssuesByLabels(Set<String> labels) {
+        if (labels == null || labels.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        /*List<Issue> result = new ArrayList<>();
+        List<Issue> issues = repository.getIssues();
+        for (Issue issue : issues) {
+            Set<String> issueLabels = issue.getLabels();
+            if(issueLabels.containsAll(labels)) {
+                result.add(issue);
+            }
+        }
+
+        return result;*/
+
+        Predicate<Issue> predicate = (issue) -> issue.getLabels().containsAll(labels);
+
+        return repository.filterByPredicate(predicate);
+    }
+
+    public List<Issue> getIssuesByAssignee(Set<String> assignee) {
+        if (assignee == null || assignee.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Predicate<Issue> predicate = (issue) -> issue.getAssignee().containsAll(assignee);
+
+        return repository.filterByPredicate(predicate);
+    }
+
     /* Сортировка */
-    public List<Issue> getAllByNewest() {
-        return getAllByComparator(new IssueComparatorByNewest());
+    public List<Issue> sortIssuesByNewest(List<Issue> issues) {
+        // Передаем список issue как параметр, т.к. список, получаемый из репозитория,
+        // может быть и отфильтрованным, т.е. сначала фильтрация, затем сортировка
+        issues.sort(new IssueComparatorByOldest());
+        Collections.reverse(issues);
+
+        return issues;
     }
 
-    public List<Issue> getAllByOldest() {
-        List<Issue> result = getAllByComparator(new IssueComparatorByNewest());
-        Collections.reverse(result);
+    public List<Issue> sortIssuesByOldest(List<Issue> issues) {
+        // Сортируем как в предыдущем методе, затем реверсируем полученный список
+        //List<Issue> result = getAllByComparator(new IssueComparatorByNewest());
+        issues.sort(new IssueComparatorByOldest());
 
-        return result;
+        return issues;
     }
 
-    public List<Issue> getAllByMostCommented() {
-        return getAllByComparator(new IssueComparatorByMostCommented());
+    public List<Issue> sortIssuesByLeastCommented(List<Issue> issues) {
+        issues.sort(new IssueComparatorByLeastCommented());
+
+        return issues;
     }
 
-    public List<Issue> getAllByLeastCommented() {
-        List<Issue> result = getAllByComparator(new IssueComparatorByMostCommented());
-        Collections.reverse(result);
+    public List<Issue> sortIssuesByMostCommented(List<Issue> issues) {
+        issues.sort(new IssueComparatorByLeastCommented());
+        Collections.reverse(issues);
 
-        return result;
+        return issues;
     }
 
-    public List<Issue> getAllByRecentlyUpdated() {
-        return getAllByComparator(new IssueComparatorByRecentlyUpdated());
+    public List<Issue> sortIssuesByRecentlyUpdated(List<Issue> issues) {
+        issues.sort(new IssueComparatorByLastRecentlyUpdated());
+        Collections.reverse(issues);
+
+        return issues;
     }
 
-    public List<Issue> getAllByLastRecentlyUpdated() {
-        List<Issue> result = getAllByComparator(new IssueComparatorByRecentlyUpdated());
-        Collections.reverse(result);
+    public List<Issue> sortIssuesByLastRecentlyUpdated(List<Issue> issues) {
+        issues.sort(new IssueComparatorByLastRecentlyUpdated());
 
-        return result;
+        return issues;
     }
 
     /**

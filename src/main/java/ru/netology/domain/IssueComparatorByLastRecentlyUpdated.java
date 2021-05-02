@@ -7,7 +7,7 @@ import java.util.Date;
  * Класс-компаратор для сортировки issues по обновлению (recently updated),
  * то есть по дате обновления (чем позже было обновлено issue)
  * */
-public class IssueComparatorByRecentlyUpdated implements Comparator<Issue> {
+public class IssueComparatorByLastRecentlyUpdated implements Comparator<Issue> {
     @Override
     public int compare(Issue firstIssue, Issue secondIssue) {
         Date firstDate = firstIssue.getUpdatedDate();

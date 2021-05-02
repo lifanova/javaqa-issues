@@ -4,10 +4,10 @@ import java.util.Comparator;
 import java.util.Date;
 
 /**
- * Класс-компаратор для сортировки issues по новизне (newest),
- * то есть по дате создания (чем позже было создано, тем "новее" issue)
+ * Класс-компаратор для сортировки issues по дате создания
+ * (чем позже было создано, тем "новее" issue)
  * */
-public class IssueComparatorByNewest implements Comparator<Issue> {
+public class IssueComparatorByOldest implements Comparator<Issue> {
     @Override
     public int compare(Issue firstIssue, Issue secondIssue) {
         Date firstDate = firstIssue.getCreatedDate();

@@ -5,9 +5,9 @@ import java.util.Set;
 
 
 /**
- * Класс-компаратор для сортировки issues по числу комментариев (most commented)
+ * Класс-компаратор для сортировки issues по числу комментариев (least commented)
  * */
-public class IssueComparatorByMostCommented implements Comparator<Issue> {
+public class IssueComparatorByLeastCommented implements Comparator<Issue> {
     @Override
     public int compare(Issue firstIssue, Issue secondIssue) {
         Set<String> firstComments = firstIssue.getComments();
